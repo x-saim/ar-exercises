@@ -1,3 +1,5 @@
+
+
 class Store < ActiveRecord::Base
   has_many :employees
 
@@ -5,6 +7,14 @@ class Store < ActiveRecord::Base
   validates :annual_revenue, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   validate :must_carry_apparel
+
+  before_destroy :check_for_employees
+
+  def check_for_employees
+    if employees.exists?
+      throw(:abort)
+    end
+  end
 
   def must_carry_apparel
     return unless !mens_apparel && !womens_apparel
